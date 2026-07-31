@@ -233,11 +233,14 @@ window.setTimeout(initLeadersFirstMetaPixel, 1500);
     });
   }
   function saveLead(payload) {
+    var context = { pageUri: payload.page_url, pageName: document.title };
+    var hutk = getCookie('hubspotutk');
+    if (hutk) context.hutk = hutk;
     return fetch('https://api.hsforms.com/submissions/v3/integration/submit/' + HUBSPOT_PORTAL_ID + '/' + HUBSPOT_FORM_ID, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         submittedAt: Date.now(), fields: hubSpotFields(payload),
-        context: { hutk: getCookie('hubspotutk'), pageUri: payload.page_url, pageName: document.title }
+        context: context
       })
     }).then(function (response) {
       if (!response.ok) return response.text().then(function (body) { throw new Error('HubSpot submission failed (' + response.status + '): ' + body); });
